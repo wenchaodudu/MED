@@ -2,9 +2,10 @@
 
 import numpy
 import os
-from sklearn.cluster.k_means_ import KMeans
+from sklearn.cluster import KMeans
 import cPickle
 import sys
+import pdb
 
 # Performs K-means clustering and save the model to a local file
 
@@ -16,8 +17,13 @@ if __name__ == '__main__':
         print "output_file -- path to save the k-means model"
         exit(1)
 
-    mfcc_csv_file = sys.argv[1]; output_file = sys.argv[3]
+    #mfcc_csv_file = sys.argv[1]; 
+    output_file = sys.argv[3]
+    data = numpy.load('tokens.npy').reshape(-1, 390)
     cluster_num = int(sys.argv[2])
-
+    model = KMeans(n_clusters=cluster_num, n_init=1, max_iter=150, verbose=2)
+    model.fit(data)
+    cPickle.dump(model, open(output_file, 'wb'))
 
     print "K-means trained successfully!"
+    

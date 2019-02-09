@@ -4,6 +4,7 @@ import os
 import cPickle
 from sklearn.cluster.k_means_ import KMeans
 import sys
+import pdb
 # Generate k-means features for videos; each video is represented by a single vector
 
 if __name__ == '__main__':
@@ -14,11 +15,23 @@ if __name__ == '__main__':
         print "file_list -- the list of videos"
         exit(1)
 
-    kmeans_model = sys.argv[1]; file_list = sys.argv[3]
+    kmeans_model = sys.argv[1]
+    file_list = sys.argv[3]
     cluster_num = int(sys.argv[2])
 
     # load the kmeans model
     kmeans = cPickle.load(open(kmeans_model,"rb"))
+
+    tokens = numpy.load('tokens.npy').reshape(-1, 390)
+    token_ids = numpy.load('token_ids.npy')
+    words = kmeans.predict(tokens)
+    vectors = {}
+    for line in open('../all.video').readlines():
+        vectors[line[:-1]] = numpy.zeros(cluster_num)
+        
+    for word, name in zip(tokens, token_ids):
+        vectors[name][word] += 1
+    pdb.set_trace()
     
 
     print "K-means features generated successfully!"

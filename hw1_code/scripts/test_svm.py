@@ -1,10 +1,11 @@
 #!/bin/python 
 
-import numpy
+import numpy as np
 import os
 from sklearn.svm.classes import SVC
 import cPickle
 import sys
+import pdb
 
 # Apply the SVM model to the testing videos; Output the score for each video
 
@@ -18,7 +19,24 @@ if __name__ == '__main__':
         exit(1)
 
     model_file = sys.argv[1]
-    feat_dir = sys.argv[2]
+    feat_name = sys.argv[2]
     feat_dim = int(sys.argv[3])
     output_file = sys.argv[4]
+
+    def get_labels(path):
+        train_labels = open(path).readlines()
+        labels = {}
+        for line in train_labels:
+            name, l = line.split()
+            labels[name] = 0
+        return labels
+    train_labels = get_labels('../all_test_fake.lst')
+    feature = np.load('{}_feat.npy'.format(feat_name))
+    ids = np.load('{}_id.npy'.format(feat_name)).tolist()
+    train_ids = train_labels.keys()
+    idx_select = [ids.index(i) for i in train_ids]
+    train_features = feature[idx_select]
+    model = cPickle.load(open(model_file, 'rb'))
+    labels = model.predict_proba(train_features)
+    np.save(output_file, labels)
 

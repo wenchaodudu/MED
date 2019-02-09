@@ -4,6 +4,7 @@
 import numpy
 import os
 import sys
+import pdb
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
@@ -23,11 +24,21 @@ if __name__ == '__main__':
     # num_of_frame * ratio rows
     numpy.random.seed(18877)
 
+    all_vec = []
+    names = []
     for line in fread.readlines():
+        print(line)
         mfcc_path = "mfcc/" + line.replace('\n','') + ".mfcc.csv"
         if os.path.exists(mfcc_path) == False:
             continue
         array = numpy.genfromtxt(mfcc_path, delimiter=";")
+        for x in range(array.shape[0] // 5):
+            start = x * 10
+            end = (x + 1) * 10
+            if end < array.shape[0]:
+                all_vec.append(array[start:end])
+                names.append(line[:-1])
+        '''
         numpy.random.shuffle(array)
         select_size = int(array.shape[0] * ratio)
         feat_dim = array.shape[1]
@@ -37,5 +48,8 @@ if __name__ == '__main__':
             for m in range(1, feat_dim):
                 line += ';' + str(array[n][m])
             fwrite.write(line + '\n')
+        '''
+    numpy.save('tokens', all_vec)
+    numpy.save('token_ids', names)
     fwrite.close()
 

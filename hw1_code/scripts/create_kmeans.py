@@ -26,12 +26,15 @@ if __name__ == '__main__':
     token_ids = numpy.load('token_ids.npy')
     words = kmeans.predict(tokens)
     vectors = {}
-    for line in open('../all.video').readlines():
+    for line in open('list/all.video').readlines():
         vectors[line[:-1]] = numpy.zeros(cluster_num)
         
-    for word, name in zip(tokens, token_ids):
+    for word, name in zip(words, token_ids):
         vectors[name][word] += 1
-    pdb.set_trace()
+    names = vectors.keys()
+    feature = [vectors[k] for k in names]
+    numpy.save('mfcc_feat', feature)
+    numpy.save('mfcc_ids', names)
     
 
     print "K-means features generated successfully!"

@@ -30,13 +30,16 @@ if __name__ == '__main__':
             name, l = line.split()
             labels[name] = 0
         return labels
-    train_labels = get_labels('../all_test_fake.lst')
+    train_labels = get_labels('../all_val.lst')
     feature = np.load('{}_feat.npy'.format(feat_name))
     ids = np.load('{}_id.npy'.format(feat_name)).tolist()
     train_ids = train_labels.keys()
     idx_select = [ids.index(i) for i in train_ids]
     train_features = feature[idx_select]
-    model = cPickle.load(open(model_file, 'rb'))
+    model, feat_select = cPickle.load(open(model_file, 'rb'))
     labels = model.predict_proba(train_features)
-    np.save(output_file, labels)
-
+    with open(output_file, 'w') as out:
+        for l in labels:
+            out.write(str(l[1]))
+            out.write('\n')
+        
